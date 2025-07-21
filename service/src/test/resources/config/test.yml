@@ -178,16 +178,16 @@ pagedSingleUseKEMPreKeyStore:
   region: us-west-2    # AWS region
 
 cacheCluster: # Redis server configuration for cache cluster
-  type: local
+  type: mock
 
 pubsub: # Redis server configuration for pubsub cluster
-  type: local
+  type: mock
 
 pushSchedulerCluster: # Redis server configuration for push scheduler cluster
-  type: local
+  type: mock
 
 rateLimitersCluster: # Redis server configuration for rate limiters cluster
-  type: local
+  type: mock
 
 directoryV2:
   client: # Configuration for interfacing with Contact Discovery Service v2 cluster
