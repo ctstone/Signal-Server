@@ -255,7 +255,7 @@ svrb:
 messageCache: # Redis server configuration for message store cache
   persistDelayMinutes: 1
   cluster:
-    type: local
+    type: mock
 
 gcpAttachments: # GCP Storage configuration
   domain: example.com
