@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  redis-8001:
+    image: redis:latest
+    ports:
+      - "8001:6379"
+    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --cluster-announce-ip 127.0.0.1 --cluster-announce-port 8001
+    volumes:
+      - redis-8001-data:/data
+
+  redis-8002:
+    image: redis:latest
+    ports:
+      - "8002:6379"
+    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --cluster-announce-ip 127.0.0.1 --cluster-announce-port 8002
+    volumes:
+      - redis-8002-data:/data
+
+  redis-8003:
+    image: redis:latest
+    ports:
+      - "8003:6379"
+    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --cluster-announce-ip 127.0.0.1 --cluster-announce-port 8003
+    volumes:
+      - redis-8003-data:/data
+
+  redis-cluster-init:
+    image: redis:latest
+    depends_on:
+      - redis-8001
+      - redis-8002
+      - redis-8003
+    network_mode: host
+    command: >
+      sh -c "
+        sleep 10 &&
+        redis-cli --cluster create
+        127.0.0.1:8001 127.0.0.1:8002 127.0.0.1:8003
+        --cluster-replicas 0 --cluster-yes
+      "
+
+volumes:
+  redis-8001-data:
+  redis-8002-data:
+  redis-8003-data:

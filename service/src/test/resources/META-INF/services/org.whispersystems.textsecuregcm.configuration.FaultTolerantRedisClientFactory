@@ -1,2 +1,0 @@
-org.whispersystems.textsecuregcm.configuration.LocalFaultTolerantRedisClientFactory
-org.whispersystems.textsecuregcm.configuration.MockFaultTolerantRedisClientFactory

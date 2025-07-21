@@ -178,16 +178,20 @@ pagedSingleUseKEMPreKeyStore:
   region: us-west-2    # AWS region
 
 cacheCluster: # Redis server configuration for cache cluster
-  type: mock
+  type: default
+  configurationUri: redis://localhost:8001/
 
 pubsub: # Redis server configuration for pubsub cluster
-  type: mock
+  type: default
+  uri: redis://localhost:8001/
 
 pushSchedulerCluster: # Redis server configuration for push scheduler cluster
-  type: mock
+  type: default
+  configurationUri: redis://localhost:8001/
 
 rateLimitersCluster: # Redis server configuration for rate limiters cluster
-  type: mock
+  type: default
+  configurationUri: redis://localhost:8001/
 
 directoryV2:
   client: # Configuration for interfacing with Contact Discovery Service v2 cluster
@@ -255,7 +259,8 @@ svrb:
 messageCache: # Redis server configuration for message store cache
   persistDelayMinutes: 1
   cluster:
-    type: mock
+    type: default
+    configurationUri: redis://localhost:8001/
 
 gcpAttachments: # GCP Storage configuration
   domain: example.com
