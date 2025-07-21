@@ -484,6 +484,8 @@ public class VerificationController {
   @ApiResponse(responseCode = "422", description = "Malformed session ID encoding")
   public VerificationSessionResponse getSession(@PathParam("sessionId") final String encodedSessionId) {
 
+    logger.info("Getting session for encoded session ID: {}", encodedSessionId);
+
     final RegistrationServiceSession registrationServiceSession = retrieveRegistrationServiceSession(encodedSessionId);
     final VerificationSession verificationSession = retrieveVerificationSession(registrationServiceSession);
 
