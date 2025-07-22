@@ -1,45 +1,82 @@
-version: '3.8'
 services:
-  redis-8001:
-    image: redis:latest
+  redis-node-1:
+    image: redis:7-alpine
+    container_name: redis-node-1
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 8001 --cluster-announce-ip redis-node-1 --cluster-announce-port 8001 --cluster-announce-bus-port 18001
     ports:
-      - "8001:6379"
-    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --cluster-announce-ip 127.0.0.1 --cluster-announce-port 8001
+      - "8001:8001"
+      - "18001:18001"
     volumes:
-      - redis-8001-data:/data
+      - redis-node-1-data:/data
+    networks:
+      - redis-cluster
+    restart: unless-stopped
 
-  redis-8002:
-    image: redis:latest
+  redis-node-2:
+    image: redis:7-alpine
+    container_name: redis-node-2
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 8002 --cluster-announce-ip redis-node-2 --cluster-announce-port 8002 --cluster-announce-bus-port 18002
     ports:
-      - "8002:6379"
-    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --cluster-announce-ip 127.0.0.1 --cluster-announce-port 8002
+      - "8002:8002"
+      - "18002:18002"
     volumes:
-      - redis-8002-data:/data
+      - redis-node-2-data:/data
+    networks:
+      - redis-cluster
+    restart: unless-stopped
 
-  redis-8003:
-    image: redis:latest
+  redis-node-3:
+    image: redis:7-alpine
+    container_name: redis-node-3
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 8003 --cluster-announce-ip redis-node-3 --cluster-announce-port 8003 --cluster-announce-bus-port 18003
     ports:
-      - "8003:6379"
-    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --cluster-announce-ip 127.0.0.1 --cluster-announce-port 8003
+      - "8003:8003"
+      - "18003:18003"
     volumes:
-      - redis-8003-data:/data
+      - redis-node-3-data:/data
+    networks:
+      - redis-cluster
+    restart: unless-stopped
 
   redis-cluster-init:
-    image: redis:latest
+    image: redis:7-alpine
+    container_name: redis-cluster-init
     depends_on:
-      - redis-8001
-      - redis-8002
-      - redis-8003
-    network_mode: host
+      - redis-node-1
+      - redis-node-2
+      - redis-node-3
+    networks:
+      - redis-cluster
     command: >
       sh -c "
+        echo 'Waiting for Redis nodes to be ready...' &&
         sleep 10 &&
-        redis-cli --cluster create
-        127.0.0.1:8001 127.0.0.1:8002 127.0.0.1:8003
-        --cluster-replicas 0 --cluster-yes
+        for i in 1 2 3; do
+          node_name=redis-node-$$i
+          port=$$((8000 + i))
+          until redis-cli -h $$node_name -p $$port ping | grep -q PONG; do
+            echo 'Waiting for Redis node '$$node_name' on port '$$port'...'
+            sleep 2
+          done
+          echo 'Redis node '$$node_name' on port '$$port' is ready'
+        done &&
+        echo 'Creating minimal Redis cluster...' &&
+        redis-cli --cluster create redis-node-1:8001 redis-node-2:8002 redis-node-3:8003 --cluster-replicas 0 --cluster-yes &&
+        echo 'Cluster created successfully!' &&
+        redis-cli -h redis-node-1 -p 8001 cluster info &&
+        redis-cli -h redis-node-1 -p 8001 cluster nodes &&
+        echo 'Testing cluster...' &&
+        redis-cli -h redis-node-1 -p 8001 set test-key 'minimal-cluster-working' &&
+        redis-cli -h redis-node-1 -p 8001 get test-key &&
+        echo 'Redis cluster initialization complete!'
       "
+    restart: "no"
+
+networks:
+  redis-cluster:
+    driver: bridge
 
 volumes:
-  redis-8001-data:
-  redis-8002-data:
-  redis-8003-data:
+  redis-node-1-data:
+  redis-node-2-data:
+  redis-node-3-data:
