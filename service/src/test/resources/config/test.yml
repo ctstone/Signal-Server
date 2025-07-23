@@ -179,19 +179,19 @@ pagedSingleUseKEMPreKeyStore:
 
 cacheCluster: # Redis server configuration for cache cluster
   type: default
-  configurationUri: redis://localhost:8001/
+  configurationUri: ${REDIS_URL:-redis://localhost:8001/}
 
 pubsub: # Redis server configuration for pubsub cluster
   type: default
-  uri: redis://localhost:8001/
+  uri: ${REDIS_URL:-redis://localhost:8001/}
 
 pushSchedulerCluster: # Redis server configuration for push scheduler cluster
   type: default
-  configurationUri: redis://localhost:8001/
+  configurationUri: ${REDIS_URL:-redis://localhost:8001/}
 
 rateLimitersCluster: # Redis server configuration for rate limiters cluster
   type: default
-  configurationUri: redis://localhost:8001/
+  configurationUri: ${REDIS_URL:-redis://localhost:8001/}
 
 directoryV2:
   client: # Configuration for interfacing with Contact Discovery Service v2 cluster
@@ -260,7 +260,7 @@ messageCache: # Redis server configuration for message store cache
   persistDelayMinutes: 1
   cluster:
     type: default
-    configurationUri: redis://localhost:8001/
+    configurationUri: ${REDIS_URL:-redis://localhost:8001/}
 
 gcpAttachments: # GCP Storage configuration
   domain: example.com
