@@ -81,7 +81,7 @@ public class RegistrationServiceClient implements Managed {
           .build();
     }
 
-    this.stub = RegistrationServiceGrpc.newFutureStub(channel).withCallCredentials(callCredentials);
+    this.stub = RegistrationServiceGrpc.newFutureStub(channel); // .withCallCredentials(callCredentials);
     this.collationKeySalt = collationKeySalt;
     this.callbackExecutor = callbackExecutor;
 
