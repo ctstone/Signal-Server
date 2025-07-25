@@ -1,5 +1,5 @@
 logging:
-  level: DEBUG
+  level: INFO # DEBUG
   appenders:
     - type: console
       threshold: ALL
@@ -432,14 +432,31 @@ oneTimeDonations:
         - '40'
 
 registrationService:
+  # proxied endpoint
   host: jamb-dev-signal-registration-server.ngrok.app
   port: 443
+
+  # fake credentials to satisfy the parser. "withCallCredentials()" is disabled in RegistrationServiceClient.java
   credentialConfigurationJson: |
     {
-      "test": "configuration"
+      "type": "external_account",
+      "audience": "//iam.googleapis.com/projects/123456789/locations/global/workloadIdentityPools/test-pool/providers/test-provider",
+      "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
+      "token_url": "https://sts.googleapis.com/v1/token",
+      "credential_source": {
+        "file": "/dev/null"
+      },
+      "service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/test@example.iam.gserviceaccount.com:generateAccessToken"
     }
+
+  # Not needed while withCallCredentials is disabled (?)
   identityTokenAudience: https://jamb-dev-signal-registration-server.ngrok.app
+
+  # Ok to use default test value?
   collationKeySalt: secret://registrationService.collationKeySalt
+
+  # This is the root CA of Let's Encrypt which is hosting the ngrok endpoint
+  # TODO: Is this needed? Why not managed by the (container) OS?
   registrationCaCertificate: |
     -----BEGIN CERTIFICATE-----
     MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw

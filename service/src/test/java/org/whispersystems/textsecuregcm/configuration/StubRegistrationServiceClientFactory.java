@@ -56,7 +56,7 @@ public class StubRegistrationServiceClientFactory implements RegistrationService
     private final static Map<String, RegistrationServiceSession> SESSIONS = new ConcurrentHashMap<>();
 
     public StubRegistrationServiceClient(final String registrationCaCertificate, final byte[] collationKeySalt) throws IOException {
-      super("example.com", 8080, null, registrationCaCertificate,  collationKeySalt, null);
+      super("example.com", 8080, registrationCaCertificate,  collationKeySalt, null);
     }
 
     @Override

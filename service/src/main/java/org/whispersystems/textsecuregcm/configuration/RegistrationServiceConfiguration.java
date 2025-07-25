@@ -24,12 +24,12 @@ public record RegistrationServiceConfiguration(@NotBlank String host,
   public RegistrationServiceClient build(final Environment environment, final Executor callbackExecutor,
       final ScheduledExecutorService identityRefreshExecutor) {
     try {
-      final IdentityTokenCallCredentials callCredentials = IdentityTokenCallCredentials.fromCredentialConfig(
-          credentialConfigurationJson, identityTokenAudience, identityRefreshExecutor);
+      // final IdentityTokenCallCredentials callCredentials = IdentityTokenCallCredentials.fromCredentialConfig(
+      //     credentialConfigurationJson, identityTokenAudience, identityRefreshExecutor);
 
-      environment.lifecycle().manage(callCredentials);
+      // environment.lifecycle().manage(callCredentials);
 
-      return new RegistrationServiceClient(host, port, callCredentials, registrationCaCertificate, collationKeySalt.value(),
+      return new RegistrationServiceClient(host, port/*, callCredentials*/, registrationCaCertificate, collationKeySalt.value(),
           identityRefreshExecutor);
     } catch (IOException e) {
       throw new RuntimeException(e);

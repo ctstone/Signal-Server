@@ -66,7 +66,7 @@ public class RegistrationServiceClient implements Managed {
 
   public RegistrationServiceClient(final String host,
       final int port,
-      final CallCredentials callCredentials,
+      // final CallCredentials callCredentials,
       final String caCertificatePem,
       final byte[] collationKeySalt,
       final Executor callbackExecutor) throws IOException {
